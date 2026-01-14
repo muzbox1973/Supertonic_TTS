@@ -32,14 +32,16 @@ export default function TTSInterface() {
         setLoadingProgress("Initializing TTS engine...");
         const tts = new SupertonicTTS();
 
-        setLoadingProgress("Loading model (this may take a moment)...");
-        await tts.initialize((progress) => {
-          setLoadingProgress(`Loading: ${Math.round(progress * 100)}%`);
+        await tts.initialize((status) => {
+          setLoadingProgress(status);
         });
 
         ttsRef.current = tts;
         setIsModelLoaded(true);
         setLoadingProgress("");
+
+        // Set initial example text
+        setText(exampleTexts[selectedLanguage]);
       } catch (err) {
         setError(
           `Failed to initialize TTS: ${err instanceof Error ? err.message : String(err)}`
