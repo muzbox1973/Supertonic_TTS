@@ -1,3 +1,4 @@
+// @ts-expect-error - Type definitions issue with onnxruntime-web 1.17.0
 import * as ort from 'onnxruntime-web';
 
 // Available languages for multilingual TTS
@@ -444,8 +445,24 @@ export async function loadTextProcessor(onnxDir: string): Promise<UnicodeProcess
  * Load ONNX model
  */
 export async function loadOnnx(onnxPath: string, options: ort.InferenceSession.SessionOptions): Promise<ort.InferenceSession> {
-    const session = await ort.InferenceSession.create(onnxPath, options);
-    return session;
+    try {
+        // First fetch the model as ArrayBuffer for better compatibility
+        console.log(`Fetching model from: ${onnxPath}`);
+        const response = await fetch(onnxPath);
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch model: ${response.status} ${response.statusText}`);
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        console.log(`Model loaded, size: ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`);
+
+        const session = await ort.InferenceSession.create(arrayBuffer, options);
+        return session;
+    } catch (error) {
+        console.error(`Error loading model from ${onnxPath}:`, error);
+        throw error;
+    }
 }
 
 /**
