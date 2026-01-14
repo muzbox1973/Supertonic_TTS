@@ -9,10 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "fft.js": "^4.0.4",
     "next": "^15.1.4",
+    "onnxruntime-web": "^1.20.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "onnxruntime-web": "^1.20.1"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22",
