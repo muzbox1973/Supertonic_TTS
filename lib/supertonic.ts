@@ -1,3 +1,4 @@
+// @ts-expect-error - Type definitions issue with onnxruntime-web 1.17.0
 import * as ort from "onnxruntime-web";
 import {
   loadTextToSpeech,
@@ -25,8 +26,9 @@ export class SupertonicTTS {
   constructor() {
     // Configure ONNX Runtime for WebAssembly
     ort.env.wasm.wasmPaths =
-      "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+      "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.0/dist/";
     ort.env.wasm.numThreads = 1;
+    ort.env.wasm.simd = true;
   }
 
   async initialize(
@@ -40,7 +42,9 @@ export class SupertonicTTS {
       // Set up session options for better compatibility
       const sessionOptions: ort.InferenceSession.SessionOptions = {
         executionProviders: ["wasm"],
-        graphOptimizationLevel: "all",
+        graphOptimizationLevel: "basic",
+        executionMode: "sequential",
+        enableCpuMemArena: false,
       };
 
       onProgress?.("Loading TTS models from Hugging Face...");
